@@ -208,7 +208,7 @@ resource "helm_release" "ingress_gateway" {
 
 resource "helm_release" "karmada" {
   name             = "karmada"
-  chart            = "https://github.com/karmada-io/karmada/releases/download/v1.2.0/karmada-chart-v1.2.0.tgz"
+  chart            = "karmada-charts/karmada"
   namespace        = "karmada"
   create_namespace = true
 

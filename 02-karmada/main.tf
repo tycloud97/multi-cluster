@@ -1,7 +1,7 @@
 module "karmada" {
   source = "../modules/karmada-manager"
 
-  kubeconfig_path = "../kubeconfig-cluster-manager"
+  kubeconfig_path = "../config"
 }
 
 resource "local_file" "karmada_config" {

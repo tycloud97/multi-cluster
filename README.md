@@ -101,3 +101,50 @@ $ make -f ../istio/tools/certs/Makefile.selfsigned.mk cluster3-cacerts
 
 - Sometimes, the EastWest gateway cannot be created because of a validation admission webhook. Since this is sporadic, I think it's related to a race condition. [More on this here.](https://github.com/istio/istio/issues/39205)
 - This Terraform files use the `null_resource` and `kubectl`. You should have `kubectl` installed locally.
+
+terraform -chdir=02-karmada init && terraform -chdir=02-karmada apply --auto-approve
+
+terraform -chdir=01-clusters init && terraform -chdir=01-clusters apply --auto-approve
+
+terraform -chdir=03-workers init && terraform -chdir=03-workers apply --auto-approve
+
+aws eks update-kubeconfig --name ap-cluster --kubeconfig ~/.kube/worker_config
+
+karmadactl --kubeconfig /etc/karmada/karmada-apiserver.config  join ${MEMBER_CLUSTER_NAME} --cluster-kubeconfig=$HOME/.kube/config
+
+~/.kube/config
+MEMBER_CLUSTER_NAME=`cat ~/.kube/config  | grep current-context | sed 's/: /\n/g'| sed '1d'`
+
+karmadactl --kubeconfig /Users/ty/.kube/config join arn:aws:eks:ap-southeast-1:827539266883:cluster/ap-cluster --cluster-kubeconfig=$HOME/.kube/config
+
+kubectl karmada join ap-cluster --kubeconfig=$HOME/.kube/config --cluster-kubeconfig=$HOME/.kube/config
+
+kubectl config rename-context arn:aws:eks:ap-southeast-1:827539266883:cluster/cluster-manager-cluster cluster-manager-cluster
+
+kubectl config get-contexts 
+
+kubectl config rename-context arn:aws:eks:ap-southeast-1:827539266883:cluster/ap-cluster ap-cluster
+
+kubectl config use-context ap-cluster
+
+
+aws eks update-kubeconfig --name cluster-manager-cluster
+aws eks update-kubeconfig --name ap-cluster
+
+
+kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}'
+kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}'
+
+helm install karmada -n karmada-system --create-namespace --dependency-update ./charts/karmada
+
+https://github.com/karmada-io/karmada/tree/master/charts/karmada
+
+helm --namespace karmada-system upgrade -i karmada karmada-charts/karmada --create-namespace
+
+
+<!-- kubectl delete all --all --all-namespaces -->
+
+Notes:
+
+Issue 
+Reinstall AWS CLI to latest

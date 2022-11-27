@@ -49,7 +49,7 @@ data "local_file" "node_ip" {
 
 resource "helm_release" "karmada" {
   name             = "karmada"
-  chart            = "https://github.com/karmada-io/karmada/releases/download/v1.2.0/karmada-chart-v1.2.0.tgz"
+  chart            = "karmada-charts/karmada"
   namespace        = local.karmada_namespace
   create_namespace = true
 
