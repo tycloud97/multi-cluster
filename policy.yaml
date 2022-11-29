@@ -1,0 +1,28 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+ name: hello-propagation
+spec:
+ resourceSelectors:
+   - apiVersion: apps/v1
+     kind: Deployment
+     name: hello
+   - apiVersion: v1
+     kind: Service
+     name: hello
+   - apiVersion: apps/v1
+     kind: Deployment
+     name: sleep
+ placement:
+   clusterAffinity:
+     clusterNames:
+       - ap
+   replicaScheduling:
+     replicaDivisionPreference: Weighted
+     replicaSchedulingType: Divided
+     weightPreference:
+       staticWeightList:
+         - targetCluster:
+             clusterNames:
+               - ap
+           weight: 1

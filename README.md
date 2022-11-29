@@ -127,6 +127,8 @@ kubectl config rename-context arn:aws:eks:ap-southeast-1:827539266883:cluster/ap
 
 kubectl config use-context ap-cluster
 
+kubectl config use-context cluster-manager-cluster
+
 
 aws eks update-kubeconfig --name cluster-manager-cluster
 aws eks update-kubeconfig --name ap-cluster
@@ -148,3 +150,38 @@ Notes:
 
 Issue 
 Reinstall AWS CLI to latest
+
+helm upgrade eastwest-gateway istio/gateway \
+ --namespace istio-system \
+ --version=1.14.1 \
+ --set labels.istio=eastwestgateway \
+ --set labels.app=istio-eastwestgateway \
+ --set labels.topology.istio.io/network=network1 \
+ --set networkGateway=network1 \
+ --set service.ports[0].name=status-port \
+ --set service.ports[0].port=15021 \
+ --set service.ports[0].targetPort=15021 \
+ --set service.ports[1].name=tls \
+ --set service.ports[1].port=15443 \
+ --set service.ports[1].targetPort=15443 \
+ --set service.ports[2].name=tls-istiod \
+ --set service.ports[2].port=15012 \
+ --set service.ports[2].targetPort=15012 \
+ --set service.ports[3].name=tls-webhook \
+ --set service.ports[3].port=15017 \
+ --set service.ports[3].targetPort=15017 \
+
+
+for i in {1..10}
+do
+ kubectl exec --kubeconfig=kubeconfig-ap -c sleep \
+   "$(kubectl get pod --kubeconfig=kubeconfig-ap -l \
+   app=sleep -o jsonpath='{.items[0].metadata.name}')" \
+   -- curl -sS hello:5000 | grep REGION
+done
+
+https://medium.com/@danielepolencic/scaling-kubernetes-to-multiple-clusters-and-regionss-491813c3c8cd
+https://www.youtube.com/watch?v=Ay3KiBWFuX0&t=48s
+https://www.qovery.com/blog/kubernetes-multi-cluster-why-and-when-to-use-them
+https://learnk8s.io/bite-sized/connecting-multiple-kubernetes-clusters
+https://loft.sh/blog/multi-cluster-kubernetes-part-one-defining-goals-and-responsibilities/
