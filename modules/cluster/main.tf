@@ -77,9 +77,9 @@ resource "aws_eks_node_group" "this" {
   subnet_ids      = flatten(["subnet-0d5c8d7e26e0c91dd", "subnet-05acd588e43e1b244"])
 
   scaling_config {
-    desired_size = 2
-    max_size     = 2
-    min_size     = 2
+    desired_size = 1
+    max_size     = 1
+    min_size     = 1
   }
 
   ami_type       = "AL2_x86_64" # AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64, CUSTOM
@@ -145,7 +145,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 
   tags = {
-    Name                                           = "${var.name}-node-sg"
+    Name                                        = "${var.name}-node-sg"
     "kubernetes.io/cluster/${var.name}-cluster" = "owned"
   }
 }
